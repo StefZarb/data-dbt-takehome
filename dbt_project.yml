@@ -30,5 +30,13 @@ models:
       materialized: view
       +docs:
         node_color: 'silver'
+    intermediate:
+      materialized: view
+      +docs:
+        node_color: 'blue'
+    marts:
+      materialized: table
+      +docs:
+        node_color: 'gold'
     +docs:
       node_color: 'gold'

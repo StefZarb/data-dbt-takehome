@@ -1,0 +1,264 @@
+version: 2
+
+models:
+  # Dimensional Models
+  - name: dim_pcns
+    description: "Primary Care Network dimension table containing PCN information"
+    columns:
+      - name: pcn_id
+        description: "Unique identifier for each Primary Care Network"
+        tests:
+          - not_null
+          - unique
+      - name: pcn_name
+        description: "Name of the Primary Care Network"
+        tests:
+          - not_null
+
+  - name: dim_patients
+    description: "Patient dimension table containing cleaned patient information"
+    columns:
+      - name: patient_id
+        description: "Unique identifier for each patient"
+        tests:
+          - not_null
+          - unique
+      - name: practice_id
+        description: "Foreign key to practices table"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_practices')
+              field: practice_id
+      - name: age
+        description: "Patient age in years"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 120
+      - name: age_group
+        description: "Age group categorization (0-18, 19-35, 36-50, 51+)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['0-18', '19-35', '36-50', '51+']
+      - name: gender
+        description: "Patient gender (may be null)"
+      - name: registration_date
+        description: "Date when patient registered"
+        tests:
+          - not_null
+      - name: conditions
+        description: "JSON array of patient conditions"
+      - name: phone_number
+        description: "Cleaned phone number"
+      - name: email
+        description: "Patient email address"
+
+  - name: dim_practices
+    description: "Practice dimension table containing practice information"
+    columns:
+      - name: pcn_id
+        description: "Primary Care Network identifier"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_pcns')
+              field: pcn_id
+      - name: practice_id
+        description: "Unique identifier for each practice"
+        tests:
+          - not_null
+          - unique
+      - name: practice_name
+        description: "Name of the practice"
+        tests:
+          - not_null
+      - name: location
+        description: "Practice location"
+        tests:
+          - not_null
+      - name: established_date
+        description: "Date when practice was established"
+        tests:
+          - not_null
+
+  # Fact Table
+  - name: fact_activities
+    description: "Fact table containing patient activity records"
+    columns:
+      - name: activity_id
+        description: "Unique identifier for each activity"
+        tests:
+          - not_null
+          - unique
+      - name: patient_id
+        description: "Foreign key to patients table"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_patients')
+              field: patient_id
+      - name: activity_type
+        description: "Type of activity performed"
+        tests:
+          - not_null
+      - name: activity_date
+        description: "Date when activity occurred"
+        tests:
+          - not_null
+      - name: duration_minutes
+        description: "Duration of activity in minutes"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1440  # 24 hours
+
+  # Mart Models
+  - name: mart_patient_pcn_summary
+    description: "Summary of patient counts by Primary Care Network"
+    columns:
+      - name: pcn_name
+        description: "Name of the Primary Care Network"
+        tests:
+          - not_null
+      - name: total_patients
+        description: "Total number of patients in the PCN"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+
+  - name: mart_practice_age_summary
+    description: "Average patient age by practice"
+    columns:
+      - name: practice_name
+        description: "Name of the practice"
+        tests:
+          - not_null
+      - name: average_patient_age
+        description: "Average age of patients in the practice"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 120
+
+  - name: mart_age_group_pcn_summary
+    description: "Patient count by age group and PCN"
+    columns:
+      - name: pcn_name
+        description: "Name of the Primary Care Network"
+        tests:
+          - not_null
+      - name: age_group
+        description: "Age group category"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['0-18', '19-35', '36-50', '51+']
+      - name: total_patients
+        description: "Number of patients in this age group and PCN"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+
+  - name: mart_hypertension_practice_summary
+    description: "Percentage of patients with hypertension by practice"
+    columns:
+      - name: practice_name
+        description: "Name of the practice"
+        tests:
+          - not_null
+      - name: hypertension_percentage
+        description: "Percentage of patients with hypertension (0-100)"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 100
+
+  - name: mart_patients_no_activity_3_months
+    description: "Patients with no activity in the last 3 months"
+    columns:
+      - name: patient_id
+        description: "Unique patient identifier"
+        tests:
+          - not_null
+          - unique
+      - name: practice_id
+        description: "Practice identifier"
+        tests:
+          - not_null
+      - name: age
+        description: "Patient age"
+        tests:
+          - not_null
+      - name: age_group
+        description: "Patient age group"
+        tests:
+          - not_null
+      - name: gender
+        description: "Patient gender"
+      - name: registration_date
+        description: "Patient registration date"
+        tests:
+          - not_null
+      - name: conditions
+        description: "Patient conditions as JSON"
+      - name: phone_number
+        description: "Patient phone number"
+      - name: email
+        description: "Patient email"
+      - name: last_activity_date
+        description: "Date of last activity (null if no activity)"
+
+  - name: mart_patient_recent_activity
+    description: "Recent activity summary for patients"
+    columns:
+      - name: patient_id
+        description: "Unique patient identifier"
+        tests:
+          - not_null
+          - unique
+      - name: practice_id
+        description: "Practice identifier"
+        tests:
+          - not_null
+      - name: practice_name
+        description: "Name of the practice"
+        tests:
+          - not_null
+      - name: age
+        description: "Patient age"
+        tests:
+          - not_null
+      - name: age_group
+        description: "Patient age group"
+        tests:
+          - not_null
+      - name: gender
+        description: "Patient gender"
+      - name: registration_date
+        description: "Patient registration date"
+        tests:
+          - not_null
+      - name: most_recent_activity_date
+        description: "Date of most recent activity"
+        tests:
+          - not_null
+      - name: total_activities
+        description: "Total number of activities for the patient"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: days_since_last_activity
+        description: "Number of days since last activity"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0 

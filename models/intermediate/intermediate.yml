@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: int_patients_clean
+    description: "Cleaned and deduplicated patient data with business logic applied"
+    columns:
+      - name: patient_id
+        description: "Primary key for patient (deduplicated)"
+        tests:
+          - unique
+          - not_null
+      - name: practice_id
+        description: "Foreign key to practice"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_practices')
+              field: practice_id
+      - name: age
+        description: "Patient age (filtered to valid range 0-120)"
+        tests:
+          - not_null
+      - name: age_group
+        description: "Age group categorization (0-18, 19-35, 36-50, 51+)"
+        tests:
+          - accepted_values:
+              values: ['0-18', '19-35', '36-50', '51+']
+      - name: gender
+        description: "Patient gender (may be null or outside M/F)"
+      - name: registration_date
+        description: "Date when patient registered"
+        tests:
+          - not_null
+      - name: conditions
+        description: "JSON array of patient conditions"
+      - name: phone_number
+        description: "Patient phone number (cleaned using macro)"
+      - name: email
+        description: "Patient email address"
+
+  - name: int_activities_clean
+    description: "Cleaned activity data with type casting and validation"
+    columns:
+      - name: activity_id
+        description: "Primary key for activity"
+        tests:
+          - unique
+          - not_null
+      - name: patient_id
+        description: "Foreign key to patient"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('int_patients_clean')
+              field: patient_id
+      - name: activity_type
+        description: "Type of activity (consultation, prescription, lab_test, intro_call)"
+        tests:
+          - accepted_values:
+              values: ['consultation', 'prescription', 'lab_test', 'intro_call']
+      - name: activity_date
+        description: "Date and time of the activity"
+        tests:
+          - not_null
+      - name: duration_minutes
+        description: "Duration of activity in minutes (negative values converted to positive)"
+        tests:
+          - not_null 
