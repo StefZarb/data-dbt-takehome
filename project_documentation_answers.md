@@ -1,6 +1,6 @@
 # Data Take-Home Assessment
 
-For this project, I focused on building a clean, reliable foundation—starting with data quality and modeling, then working toward clear answers to each business question. The goal was to show how I'd approach this in a real-world setting: balancing clarity, scalability, and practical use.
+For this project, I focused on building a clean, reliable foundation, starting with data quality and modeling, then working toward clear answers to each business question. The goal was to show how I'd approach this in a real-world setting: balancing clarity, scalability, and practical use.
 
 Below is a breakdown of the steps I took, along with reflections on how this approach would scale in production.
 
@@ -39,7 +39,6 @@ row_number() over (partition by patient_id order by registration_date desc) as r
 
 **4. Data Type Standardization:**
 - Phone number cleaning using custom macro
-- Gender standardization (M/F/null)
 - JSON parsing for conditions array
 
 ### 2. Dimensional Model Design
@@ -243,7 +242,7 @@ This data quality approach resulted in filtering out significant data quality is
 *Note: The level of data quality filtering can be adjusted based on how data sources are managed and the outcomes of discussions with stakeholders and platform owners.
 
 
-** Approach:**
+**Approach:**
 - ✅ **Strict data validation:** Filter out invalid ages, practice references, and duplicates
 - ✅ **Referential integrity:** Only include patients with valid practice relationships
 - ✅ **Business logic compliance:** Exclude orphaned records that can't be properly analyzed
@@ -274,9 +273,9 @@ This data quality approach resulted in filtering out significant data quality is
 ### **Custom Tests:**
 ```sql
 -- Example: assert_no_invalid_ages.sql
-SELECT COUNT(*) as invalid_ages
-FROM dim_patients 
-WHERE age < 0 OR age > 120
+select count(*) as invalid_ages
+from dim_patients 
+where age < 0 OR age > 120
 ```
 
 ## Technical Implementation Details
@@ -295,7 +294,6 @@ models/
 
 ### **Dependencies:**
 - dbt-utils for advanced testing capabilities
-- DuckDB for fast, in-memory analytics
 
 ## Production Enhancements
 
