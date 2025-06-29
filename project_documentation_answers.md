@@ -39,7 +39,6 @@ row_number() over (partition by patient_id order by registration_date desc) as r
 
 **4. Data Type Standardization:**
 - Phone number cleaning using custom macro
-- JSON parsing for conditions array
 
 ### 2. Dimensional Model Design
 
