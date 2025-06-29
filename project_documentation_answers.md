@@ -177,7 +177,7 @@ Raw Data → dbt (Transform) → Data Warehouse → Semantic Layer → BI Tools
 - **dbt Semantic Layer - dbt Cloud**: Define metrics once, query anywhere
 - **Cube**: Headless BI with API-first approach
 - **Metabase**: Self-service analytics with semantic layer
-- **Looker**: Data modeling and exploration platform
+- **Looker/Omni**: Data modeling and exploration platform
 
 ### **Recommended Production Architecture**
 
@@ -193,7 +193,7 @@ Raw Data → dbt (Transform) → Data Warehouse → Semantic Layer → BI Tools
 
 #### **Phase 3: Semantic Layer**
 - **dbt Semantic Layer**: Define metrics once, query anywhere
-- **BI Tool Integration**: Connect to Tableau, Power BI, or Looker
+- **BI Tool Integration**: Connect to Tableau, Power BI, Looker or Omni (these two can be used as Semantic Layers as well)
 - **Self-Service Analytics**: Enable business users to explore data
 
 #### **Phase 4: Advanced Analytics**
