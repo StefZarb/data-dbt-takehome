@@ -1,9 +1,3 @@
-{{
-  config(
-    materialized='table'
-  )
-}}
-
 with activities as (
     select * from {{ ref('fact_activities') }}
 ),
