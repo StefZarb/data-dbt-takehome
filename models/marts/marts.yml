@@ -182,7 +182,7 @@ models:
               max_value: 100
 
   - name: mart_patients_no_activity_3_months
-    description: "Patients with no activity in the last 3 months"
+    description: "Patients who had no activity for 3 months after their first activity"
     columns:
       - name: patient_id
         description: "Unique patient identifier"
@@ -213,8 +213,10 @@ models:
         description: "Patient phone number"
       - name: email
         description: "Patient email"
+      - name: first_activity_date
+        description: "Date of first activity"
       - name: last_activity_date
-        description: "Date of last activity (null if no activity)"
+        description: "Date of last activity after three months"
 
   - name: mart_patient_recent_activity
     description: "Recent activity summary for patients"
