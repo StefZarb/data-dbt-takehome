@@ -69,10 +69,10 @@ row_number() over (partition by patient_id order by registration_date desc) as r
 ### 2. What's the average patient age per practice?
 
 **Answer:**
-- **Hayes, Walker and Williams Clinic:** 59.0 years
-- **Foster, West and Miller Clinic:** 57.0 years
-- **Meza-Smith Clinic:** 56.0 years
-- **Dominguez Ltd Clinic:** 49.0 years
+- **Hayes, Walker and Williams Clinic:** 59 years
+- **Foster, West and Miller Clinic:** 57 years
+- **Meza-Smith Clinic:** 56 years
+- **Dominguez Ltd Clinic:** 49 years
 
 **Key Features:**
 - Excludes invalid ages (filtered in intermediate layer)
